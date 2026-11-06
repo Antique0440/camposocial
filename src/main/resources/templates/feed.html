@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Feed | campoSocial</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="navbar">
+    <div class="navbar-inner">
+        <div class="nav-brand">
+            <span class="logo-dot"></span>
+            <span class="brand-title">campoSocial</span>
+        </div>
+        <div class="nav-actions">
+            <span class="user-pill">
+                Logged in as <strong th:text="${username}">Student</strong>
+            </span>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="btn btn-outline">Log Out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="feed-layout">
+    <section class="welcome-banner card">
+        <h1>Welcome to the Quad, <span th:text="${username}">Student</span>!</h1>
+        <p>Discover peers across campus, share inside jokes, explore student clubs, and jump into live chats.</p>
+    </section>
+
+    <section class="feed-grid">
+        <div class="card feature-card">
+            <h3>Discover Peers</h3>
+            <p>Find classmates by major, graduation year, or shared dorm interests.</p>
+        </div>
+        <div class="card feature-card">
+            <h3>Campus Jokes &amp; Memes</h3>
+            <p>Post and upvote the funniest moments from lectures and dining halls.</p>
+        </div>
+        <div class="card feature-card">
+            <h3>Student Clubs</h3>
+            <p>Browse robotics, debate, music, and intramural sports societies.</p>
+        </div>
+        <div class="card feature-card">
+            <h3>Campus Chat</h3>
+            <p>Real-time study lounges and group channels for your courses.</p>
+        </div>
+    </section>
+</main>
+</body>
+</html>
+

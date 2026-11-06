@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | campoSocial</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-body">
+<div class="auth-container">
+    <div class="brand-header">
+        <span class="brand-badge">Campus Network</span>
+        <h1>campoSocial</h1>
+        <p>Connect with peers, share campus jokes, join clubs &amp; chat.</p>
+    </div>
+
+    <div class="card">
+        <h2>Welcome Back</h2>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Invalid username or password. Please try again.
+        </div>
+
+        <div th:if="${param.logout}" class="alert alert-info">
+            You have been safely logged out.
+        </div>
+
+        <div th:if="${param.registered}" class="alert alert-success">
+            Account created! Log in with your credentials.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="e.g. kwame_ashesi" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Log In to Campus</button>
+        </form>
+
+        <div class="auth-footer">
+            New student on campoSocial? <a th:href="@{/signup}">Create an account</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
