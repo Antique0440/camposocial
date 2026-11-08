@@ -94,6 +94,20 @@ class CampoSocialApplicationTests {
     }
 
     @Test
+    void nonUniversityEmailIsRejectedOnSignup() throws Exception {
+        mockMvc.perform(post("/signup")
+                        .with(csrf())
+                        .param("username", "yaw")
+                        .param("email", "yaw@gmail.com")
+                        .param("password", "secret123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("signup"))
+                .andExpect(model().attributeExists("error"));
+
+        assertThat(userRepository.existsByUsername("yaw")).isFalse();
+    }
+
+    @Test
     @WithMockUser(username = "kwame")
     void authenticatedUserCanAccessFeed() throws Exception {
         mockMvc.perform(get("/feed"))

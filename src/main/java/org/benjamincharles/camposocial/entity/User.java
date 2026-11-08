@@ -5,7 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -24,8 +27,16 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String department;
+
+    @Column(name = "graduation_year")
+    private Integer graduationYear;
+
     @Column(nullable = false)
     private String role = "ROLE_USER";
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public User() {
     }
@@ -35,6 +46,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = "ROLE_USER";
+        this.createdAt = LocalDateTime.now();
     }
 
     public User(String username, String email, String password, String role) {
@@ -42,6 +54,17 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = (role == null || role.isBlank()) ? "ROLE_USER" : role;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+        if (this.role == null || this.role.isBlank()) {
+            this.role = "ROLE_USER";
+        }
     }
 
     public Long getId() {
@@ -76,11 +99,35 @@ public class User {
         this.password = password;
     }
 
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public Integer getGraduationYear() {
+        return graduationYear;
+    }
+
+    public void setGraduationYear(Integer graduationYear) {
+        this.graduationYear = graduationYear;
+    }
+
     public String getRole() {
         return role;
     }
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
