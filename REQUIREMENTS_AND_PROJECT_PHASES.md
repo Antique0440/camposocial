@@ -157,11 +157,13 @@ erDiagram
 - [x] Create `AuthController` and render `login.html` and `signup.html` matching the design system.
 - [x] Build initial authenticated landing page (`/feed`) to verify successful session creation.
 
-### Phase 2: Campus Feed & Interaction Engine
-- [ ] Implement `Post`, `Comment`, and `Reaction` JPA entities and repositories.
-- [ ] Build `PostService` handling creation, fetching with pagination, and agree/upvote counting.
-- [ ] Develop `FeedController` and build the full 3-column `feed.html` template.
-- [ ] Implement CSRF-protected form handling for creating new posts and submitting comments.
+### Phase 2: Campus Feed & Interaction Engine (Completed)
+- [x] Implement `Post`, `Comment`, and `Reaction` JPA entities and repositories.
+- [x] Build `PostService` handling creation, fetching with pagination, and agree/upvote counting.
+- [x] Develop `FeedController` and build the full 3-column `feed.html` template.
+- [x] Implement CSRF-protected form handling for creating new posts and submitting comments.
+
+> `Post.club_id` is deliberately deferred to Phase 3, when the `Club` entity is introduced.
 
 ### Phase 3: Student Clubs & Directory
 - [ ] Implement `Club` and `ClubMembership` entities, repositories, and services.

@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="navbar">
-    <div class="navbar-inner">
+    <div class="navbar-inner navbar-wide">
         <div class="nav-brand">
             <span class="logo-dot"></span>
             <span class="brand-title">campoSocial</span>
@@ -24,31 +24,127 @@
     </div>
 </header>
 
-<main class="feed-layout">
-    <section class="welcome-banner card">
-        <h1>Welcome to the Quad, <span th:text="${username}">Student</span>!</h1>
-        <p>Discover peers across campus, share inside jokes, explore student clubs, and jump into live chats.</p>
+<main class="feed-columns">
+
+    <!-- Left column: profile + category filters -->
+    <aside class="col-left">
+        <div class="card side-card">
+            <div class="avatar avatar-lg" th:text="${#strings.toUpperCase(#strings.substring(username, 0, 1))}">S</div>
+            <h3 th:text="${username}">Student</h3>
+            <p class="muted">Welcome to the Quad</p>
+        </div>
+
+        <div class="card side-card">
+            <h4>Browse by topic</h4>
+            <ul class="filter-list">
+                <li>
+                    <a th:href="@{/feed(sort=${sort})}"
+                       th:classappend="${selectedCategory == null} ? 'active'">All posts</a>
+                </li>
+                <li th:each="c : ${categories}">
+                    <a th:href="@{/feed(sort=${sort},category=${c.name()})}"
+                       th:classappend="${selectedCategory == c} ? 'active'"
+                       th:text="${c.label}">#Tag</a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Center column: composer + timeline -->
+    <section class="col-center">
+        <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+        <form class="card composer" th:action="@{/posts}" method="post">
+            <textarea name="content" rows="3" th:maxlength="${maxPostLength}" required
+                      placeholder="Share an inside joke, announcement or question with campus..."></textarea>
+            <div class="composer-bar">
+                <select name="category" aria-label="Category">
+                    <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}">#Tag</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </div>
+        </form>
+
+        <div class="sort-tabs">
+            <a th:href="@{/feed(sort='recent',category=${categoryParam})}"
+               th:classappend="${sort == 'recent'} ? 'active'">Recent</a>
+            <a th:href="@{/feed(sort='top',category=${categoryParam})}"
+               th:classappend="${sort == 'top'} ? 'active'">Top</a>
+        </div>
+
+        <div class="card empty-state" th:if="${feed.empty}">
+            <h3>Nothing here yet</h3>
+            <p class="muted">Be the first to post something for the campus.</p>
+        </div>
+
+        <article class="card post-card" th:each="view : ${feed.content}" th:id="'post-' + ${view.post().id}">
+            <div class="post-head">
+                <div class="avatar" th:text="${#strings.toUpperCase(#strings.substring(view.post().author.username, 0, 1))}">S</div>
+                <div class="post-meta">
+                    <strong th:text="${view.post().author.username}">student</strong>
+                    <span class="muted" th:text="${#temporals.format(view.post().createdAt, 'dd MMM yyyy, HH:mm')}">date</span>
+                </div>
+                <span class="tag" th:text="${view.post().category.label}">#Tag</span>
+            </div>
+
+            <p class="post-body" th:text="${view.post().content}">content</p>
+
+            <div class="post-actions">
+                <form th:action="@{/posts/{id}/agree(id=${view.post().id})}" method="post">
+                    <button type="submit" class="btn-agree" th:classappend="${view.agreedByMe()} ? 'active'">
+                        Agree &middot; <span th:text="${view.agreeCount()}">0</span>
+                    </button>
+                </form>
+                <span class="muted" th:text="${#lists.size(view.comments())} + ' comments'">0 comments</span>
+                <form th:if="${view.canDelete()}" th:action="@{/posts/{id}/delete(id=${view.post().id})}"
+                      method="post" class="push-right"
+                      onsubmit="return confirm('Delete this post?');">
+                    <button type="submit" class="btn-link-danger">Delete</button>
+                </form>
+            </div>
+
+            <ul class="comment-list" th:if="${!view.comments().isEmpty()}">
+                <li th:each="comment : ${view.comments()}">
+                    <strong th:text="${comment.author.username}">student</strong>
+                    <span th:text="${comment.body}">comment</span>
+                </li>
+            </ul>
+
+            <form class="comment-form" th:action="@{/posts/{id}/comments(id=${view.post().id})}" method="post">
+                <input type="text" name="body" th:maxlength="${maxCommentLength}" placeholder="Write a comment..." required>
+                <button type="submit" class="btn btn-outline">Reply</button>
+            </form>
+        </article>
+
+        <nav class="pagination" th:if="${feed.totalPages > 1}">
+            <a th:if="${feed.hasPrevious()}"
+               th:href="@{/feed(page=${feed.number - 1},sort=${sort},category=${categoryParam})}">&larr; Newer</a>
+            <span class="muted" th:text="'Page ' + ${feed.number + 1} + ' of ' + ${feed.totalPages}">Page 1 of 1</span>
+            <a th:if="${feed.hasNext()}"
+               th:href="@{/feed(page=${feed.number + 1},sort=${sort},category=${categoryParam})}">Older &rarr;</a>
+        </nav>
     </section>
 
-    <section class="feed-grid">
-        <div class="card feature-card">
-            <h3>Discover Peers</h3>
-            <p>Find classmates by major, graduation year, or shared dorm interests.</p>
+    <!-- Right column: trending -->
+    <aside class="col-right">
+        <div class="card side-card">
+            <h4>Trending on campus</h4>
+            <p class="muted" th:if="${trending.isEmpty()}">No agreed posts yet.</p>
+            <ol class="trending-list" th:unless="${trending.isEmpty()}">
+                <li th:each="t : ${trending}">
+                    <a th:href="@{/feed#post-{id}(id=${t.post().id})}" th:text="${#strings.abbreviate(t.post().content, 60)}">post</a>
+                    <span class="muted">
+                        <span th:text="${t.agreeCount()}">0</span> agrees &middot; <span th:text="${t.post().author.username}">student</span>
+                    </span>
+                </li>
+            </ol>
         </div>
-        <div class="card feature-card">
-            <h3>Campus Jokes &amp; Memes</h3>
-            <p>Post and upvote the funniest moments from lectures and dining halls.</p>
+
+        <div class="card side-card">
+            <h4>Community guidelines</h4>
+            <p class="muted">Keep it fun and respectful. Authors can delete their own posts, and campus admins can remove flagged content.</p>
         </div>
-        <div class="card feature-card">
-            <h3>Student Clubs</h3>
-            <p>Browse robotics, debate, music, and intramural sports societies.</p>
-        </div>
-        <div class="card feature-card">
-            <h3>Campus Chat</h3>
-            <p>Real-time study lounges and group channels for your courses.</p>
-        </div>
-    </section>
+    </aside>
 </main>
 </body>
 </html>
-
