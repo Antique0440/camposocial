@@ -30,6 +30,11 @@ public class Post {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    /** The club this post was made in, or {@code null} for a campus-wide post. */
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private Club club;
+
     @Column(nullable = false, length = 1000)
     private String content;
 
@@ -39,6 +44,10 @@ public class Post {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    /** Pinned club announcements are shown first on the club page. */
+    @Column(nullable = false)
+    private boolean pinned = false;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")
@@ -68,6 +77,14 @@ public class Post {
         this.author = author;
     }
 
+    public Club getClub() {
+        return club;
+    }
+
+    public void setClub(Club club) {
+        this.club = club;
+    }
+
     public String getContent() {
         return content;
     }
@@ -86,6 +103,14 @@ public class Post {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 
     public List<Comment> getComments() {

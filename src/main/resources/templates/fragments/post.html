@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--/* A single post with its agree button, comments and comment form. returnTo is the local path to come back to. */-->
+<article th:fragment="card(view, returnTo)" class="card post-card" th:id="'post-' + ${view.post().id}">
+    <div class="post-head">
+        <div class="avatar" th:text="${#strings.toUpperCase(#strings.substring(view.post().author.username, 0, 1))}">S</div>
+        <div class="post-meta">
+            <strong th:text="${view.post().author.username}">student</strong>
+            <span class="muted">
+                <span th:text="${#temporals.format(view.post().createdAt, 'dd MMM yyyy, HH:mm')}">date</span>
+                <th:block th:if="${view.post().club != null}">
+                    &middot; in <a class="club-link" th:href="@{/clubs/{id}(id=${view.post().club.id})}"
+                                   th:text="${view.post().club.name}">Club</a>
+                </th:block>
+            </span>
+        </div>
+        <span class="tag tag-pinned" th:if="${view.post().pinned}">Pinned</span>
+        <span class="tag" th:text="${view.post().category.label}">#Tag</span>
+    </div>
+
+    <p class="post-body" th:text="${view.post().content}">content</p>
+
+    <div class="post-actions">
+        <form th:action="@{/posts/{id}/agree(id=${view.post().id})}" method="post">
+            <input type="hidden" name="returnTo" th:value="${returnTo}">
+            <button type="submit" class="btn-agree" th:classappend="${view.agreedByMe()} ? 'active'">
+                Agree &middot; <span th:text="${view.agreeCount()}">0</span>
+            </button>
+        </form>
+        <span class="muted" th:text="${#lists.size(view.comments())} + ' comments'">0 comments</span>
+        <form th:if="${view.canPin()}" th:action="@{/posts/{id}/pin(id=${view.post().id})}" method="post">
+            <input type="hidden" name="returnTo" th:value="${returnTo}">
+            <button type="submit" class="btn-link" th:text="${view.post().pinned} ? 'Unpin' : 'Pin'">Pin</button>
+        </form>
+        <form th:if="${view.canDelete()}" th:action="@{/posts/{id}/delete(id=${view.post().id})}"
+              method="post" class="push-right"
+              onsubmit="return confirm('Delete this post?');">
+            <input type="hidden" name="returnTo" th:value="${returnTo}">
+            <button type="submit" class="btn-link-danger">Delete</button>
+        </form>
+    </div>
+
+    <ul class="comment-list" th:if="${!view.comments().isEmpty()}">
+        <li th:each="comment : ${view.comments()}">
+            <strong th:text="${comment.author.username}">student</strong>
+            <span th:text="${comment.body}">comment</span>
+        </li>
+    </ul>
+
+    <form class="comment-form" th:action="@{/posts/{id}/comments(id=${view.post().id})}" method="post">
+        <input type="hidden" name="returnTo" th:value="${returnTo}">
+        <input type="text" name="body" maxlength="300" placeholder="Write a comment..." required>
+        <button type="submit" class="btn btn-outline">Reply</button>
+    </form>
+</article>
+</body>
+</html>
+

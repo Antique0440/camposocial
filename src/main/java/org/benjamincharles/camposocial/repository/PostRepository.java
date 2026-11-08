@@ -16,6 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByCategoryOrderByCreatedAtDesc(PostCategory category, Pageable pageable);
 
+    /** One club's posts: pinned announcements first, then newest first. */
+    Page<Post> findByClubIdOrderByPinnedDescCreatedAtDesc(Long clubId, Pageable pageable);
+
     @Query(value = "select p from Post p "
             + "order by (select count(r) from Reaction r where r.post = p) desc, p.createdAt desc",
             countQuery = "select count(p) from Post p")

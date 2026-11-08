@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class FeedController {
 
-    private static final String CAMPUS_ADMIN = "ROLE_CAMPUS_ADMIN";
+    static final String CAMPUS_ADMIN = "ROLE_CAMPUS_ADMIN";
 
     private final PostService postService;
 
@@ -34,16 +34,20 @@ public class FeedController {
         boolean admin = isCampusAdmin(authentication);
         boolean top = "top".equals(sort);
         PostCategory selected = PostCategory.parse(category);
+        String categoryParam = selected == null ? "" : selected.name();
+        String sortParam = top ? "top" : "recent";
 
         model.addAttribute("username", username);
         model.addAttribute("feed", postService.getFeed(page, top, selected, username, admin));
         model.addAttribute("trending", postService.getTrending(5, username, admin));
         model.addAttribute("categories", PostCategory.values());
         model.addAttribute("selectedCategory", selected);
-        model.addAttribute("categoryParam", selected == null ? "" : selected.name());
-        model.addAttribute("sort", top ? "top" : "recent");
+        model.addAttribute("categoryParam", categoryParam);
+        model.addAttribute("sort", sortParam);
         model.addAttribute("maxPostLength", PostService.MAX_POST_LENGTH);
         model.addAttribute("maxCommentLength", PostService.MAX_COMMENT_LENGTH);
+        model.addAttribute("returnTo", "/feed?page=" + Math.max(page, 0) + "&sort=" + sortParam
+                + "&category=" + categoryParam);
         return "feed";
     }
 
@@ -63,15 +67,20 @@ public class FeedController {
     }
 
     @PostMapping("/posts/{id}/agree")
-    public String agree(@PathVariable Long id, Authentication authentication) {
+    public String agree(
+            @PathVariable Long id,
+            @RequestParam(required = false) String returnTo,
+            Authentication authentication
+    ) {
         postService.toggleAgree(authentication.getName(), id);
-        return "redirect:/feed#post-" + id;
+        return Redirects.to(returnTo, id);
     }
 
     @PostMapping("/posts/{id}/comments")
     public String comment(
             @PathVariable Long id,
             @RequestParam String body,
+            @RequestParam(required = false) String returnTo,
             Authentication authentication,
             RedirectAttributes redirectAttributes
     ) {
@@ -80,18 +89,36 @@ public class FeedController {
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/feed#post-" + id;
+        return Redirects.to(returnTo, id);
+    }
+
+    @PostMapping("/posts/{id}/pin")
+    public String pin(
+            @PathVariable Long id,
+            @RequestParam(required = false) String returnTo,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            postService.togglePin(authentication.getName(), id, isCampusAdmin(authentication));
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return Redirects.to(returnTo, id);
     }
 
     @PostMapping("/posts/{id}/delete")
-    public String delete(@PathVariable Long id, Authentication authentication) {
+    public String delete(
+            @PathVariable Long id,
+            @RequestParam(required = false) String returnTo,
+            Authentication authentication
+    ) {
         postService.deletePost(authentication.getName(), id, isCampusAdmin(authentication));
-        return "redirect:/feed";
+        return Redirects.to(returnTo, null);
     }
 
-    private boolean isCampusAdmin(Authentication authentication) {
+    static boolean isCampusAdmin(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> CAMPUS_ADMIN.equals(authority.getAuthority()));
     }
 }
-

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Clubs | campoSocial</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar(${username}, 'clubs')}"></div>
+
+<main class="page-wide">
+    <div class="page-head">
+        <h1>Student Clubs</h1>
+        <p class="muted">Find your people. Join a club to post in its feed.</p>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <details class="card create-club">
+        <summary>Start a new club</summary>
+        <form th:action="@{/clubs}" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="club-name">Club name</label>
+                <input type="text" id="club-name" name="name" th:maxlength="${maxNameLength}" required>
+            </div>
+            <div class="form-group">
+                <label for="club-category">Category</label>
+                <select id="club-category" name="category">
+                    <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}">Tech</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="club-description">Description</label>
+                <textarea id="club-description" name="description" rows="3" th:maxlength="${maxDescriptionLength}"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Create club</button>
+            <p class="muted">You will become the club's leader.</p>
+        </form>
+    </details>
+
+    <div class="sort-tabs">
+        <a th:href="@{/clubs}" th:classappend="${selectedCategory == null} ? 'active'">All</a>
+        <a th:each="c : ${categories}" th:href="@{/clubs(category=${c.name()})}"
+           th:classappend="${selectedCategory == c} ? 'active'" th:text="${c.label}">Tech</a>
+    </div>
+
+    <div class="card empty-state" th:if="${clubs.isEmpty()}">
+        <h3>No clubs in this category yet</h3>
+    </div>
+
+    <div class="club-grid">
+        <article class="card club-card" th:each="view : ${clubs}">
+            <span class="tag" th:text="${view.club().category.label}">Tech</span>
+            <h3><a th:href="@{/clubs/{id}(id=${view.club().id})}" th:text="${view.club().name}">Club</a></h3>
+            <p class="muted club-desc" th:text="${view.club().description}">Description</p>
+            <div class="club-foot">
+                <span class="muted"><span th:text="${view.memberCount()}">0</span> members</span>
+                <form th:unless="${view.joined()}" th:action="@{/clubs/{id}/join(id=${view.club().id})}" method="post">
+                    <input type="hidden" name="returnTo" th:value="${returnTo}">
+                    <button type="submit" class="btn btn-primary btn-sm">Join</button>
+                </form>
+                <form th:if="${view.joined()}" th:action="@{/clubs/{id}/leave(id=${view.club().id})}" method="post">
+                    <input type="hidden" name="returnTo" th:value="${returnTo}">
+                    <button type="submit" class="btn btn-outline btn-sm">Leave</button>
+                </form>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>
+

@@ -11,7 +11,7 @@ public record PostView(
         long agreeCount,
         boolean agreedByMe,
         boolean canDelete,
+        boolean canPin,
         List<Comment> comments
 ) {
 }
-

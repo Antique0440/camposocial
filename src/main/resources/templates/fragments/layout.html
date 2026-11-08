@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="navbar" th:fragment="navbar(username, active)">
+    <div class="navbar-inner navbar-wide">
+        <div class="nav-brand">
+            <span class="logo-dot"></span>
+            <span class="brand-title">campoSocial</span>
+        </div>
+        <nav class="nav-links">
+            <a th:href="@{/feed}" th:classappend="${active == 'feed'} ? 'active'">Feed</a>
+            <a th:href="@{/clubs}" th:classappend="${active == 'clubs'} ? 'active'">Clubs</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="user-pill">
+                Logged in as <strong th:text="${username}">Student</strong>
+            </span>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="btn btn-outline">Log Out</button>
+            </form>
+        </div>
+    </div>
+</header>
+</body>
+</html>
+

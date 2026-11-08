@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${clubView.club().name} + ' | campoSocial'">Club | campoSocial</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar(${username}, 'clubs')}"></div>
+
+<main class="page-wide">
+    <section class="card club-header">
+        <div>
+            <span class="tag" th:text="${clubView.club().category.label}">Tech</span>
+            <h1 th:text="${clubView.club().name}">Club</h1>
+            <p class="muted" th:text="${clubView.club().description}">Description</p>
+            <p class="muted"><strong th:text="${clubView.memberCount()}">0</strong> members</p>
+        </div>
+        <div>
+            <form th:unless="${clubView.joined()}" th:action="@{/clubs/{id}/join(id=${clubView.club().id})}" method="post">
+                <input type="hidden" name="returnTo" th:value="${returnTo}">
+                <button type="submit" class="btn btn-primary">Join club</button>
+            </form>
+            <form th:if="${clubView.joined()}" th:action="@{/clubs/{id}/leave(id=${clubView.club().id})}" method="post">
+                <input type="hidden" name="returnTo" th:value="${returnTo}">
+                <button type="submit" class="btn btn-outline">Leave club</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="club-columns">
+        <section class="col-center">
+            <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+            <form class="card composer" th:if="${clubView.joined()}"
+                  th:action="@{/clubs/{id}/posts(id=${clubView.club().id})}" method="post">
+                <textarea name="content" rows="3" th:maxlength="${maxPostLength}" required
+                          th:placeholder="'Post to ' + ${clubView.club().name} + '...'"></textarea>
+                <div class="composer-bar">
+                    <select name="category" aria-label="Category">
+                        <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}">#Tag</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </div>
+            </form>
+            <div class="card empty-state" th:unless="${clubView.joined()}">
+                <p class="muted">Join this club to post in its feed.</p>
+            </div>
+
+            <div class="card empty-state" th:if="${feed.empty}">
+                <h3>No club posts yet</h3>
+            </div>
+
+            <th:block th:each="view : ${feed.content}">
+                <div th:replace="~{fragments/post :: card(${view}, ${returnTo})}"></div>
+            </th:block>
+
+            <nav class="pagination" th:if="${feed.totalPages > 1}">
+                <a th:if="${feed.hasPrevious()}"
+                   th:href="@{/clubs/{id}(id=${clubView.club().id},page=${feed.number - 1})}">&larr; Newer</a>
+                <span class="muted" th:text="'Page ' + ${feed.number + 1} + ' of ' + ${feed.totalPages}">Page 1 of 1</span>
+                <a th:if="${feed.hasNext()}"
+                   th:href="@{/clubs/{id}(id=${clubView.club().id},page=${feed.number + 1})}">Older &rarr;</a>
+            </nav>
+        </section>
+
+        <aside class="col-right">
+            <div class="card side-card">
+                <h4>Members</h4>
+                <p class="muted" th:if="${members.isEmpty()}">No members yet. Be the first!</p>
+                <ul class="member-list">
+                    <li th:each="m : ${members}">
+                        <span class="avatar avatar-sm" th:text="${#strings.toUpperCase(#strings.substring(m.user.username, 0, 1))}">S</span>
+                        <span class="member-name" th:text="${m.user.username}">student</span>
+                        <span class="tag" th:if="${m.role.name() == 'LEADER'}">Leader</span>
+                        <span class="member-actions"
+                              th:if="${clubView.canManage() and m.user.username != username}">
+                            <form th:if="${m.role.name() == 'MEMBER'}"
+                                  th:action="@{/clubs/{id}/members/{mid}/promote(id=${clubView.club().id},mid=${m.id})}" method="post">
+                                <button type="submit" class="btn-link">Promote</button>
+                            </form>
+                            <form th:if="${m.role.name() == 'LEADER'}"
+                                  th:action="@{/clubs/{id}/members/{mid}/demote(id=${clubView.club().id},mid=${m.id})}" method="post">
+                                <button type="submit" class="btn-link">Demote</button>
+                            </form>
+                            <form th:if="${m.role.name() == 'MEMBER'}"
+                                  th:action="@{/clubs/{id}/members/{mid}/remove(id=${clubView.club().id},mid=${m.id})}" method="post"
+                                  onsubmit="return confirm('Remove this member from the club?');">
+                                <button type="submit" class="btn-link-danger">Remove</button>
+                            </form>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</main>
+</body>
+</html>
+

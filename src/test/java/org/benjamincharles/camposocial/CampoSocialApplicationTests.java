@@ -1,5 +1,6 @@
 package org.benjamincharles.camposocial;
 
+import org.benjamincharles.camposocial.repository.ClubRepository;
 import org.benjamincharles.camposocial.repository.PostRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,9 +31,13 @@ class CampoSocialApplicationTests {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private ClubRepository clubRepository;
+
     @BeforeEach
     void setUp() {
         postRepository.deleteAll();
+        clubRepository.deleteAll();
         userRepository.deleteAll();
     }
 

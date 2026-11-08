@@ -165,11 +165,15 @@ erDiagram
 
 > `Post.club_id` is deliberately deferred to Phase 3, when the `Club` entity is introduced.
 
-### Phase 3: Student Clubs & Directory
-- [ ] Implement `Club` and `ClubMembership` entities, repositories, and services.
-- [ ] Develop `ClubController` to serve the club directory (`/clubs`) and club profile pages (`/clubs/{id}`).
-- [ ] Implement member join/leave actions and club-specific post filtering.
-- [ ] Populate initial campus clubs (Tech Society, Arts & Media, Sports Hub).
+### Phase 3: Student Clubs & Directory (Completed)
+- [x] Implement `Club` and `ClubMembership` entities, repositories, and services.
+- [x] Develop `ClubController` to serve the club directory (`/clubs`) and club profile pages (`/clubs/{id}`).
+- [x] Implement member join/leave actions and club-specific post filtering.
+- [x] Populate initial campus clubs (Tech Society, Arts & Media, Sports Hub).
+
+- [x] Club leader tools (FR-CLUB-04): students can create clubs and become their leader; leaders can promote, demote and remove members and pin or unpin `#Announcement` posts. A club with no leader makes its next joiner the leader, and campus admins have leader powers on every club.
+
+> Club posts also appear on the campus feed with a club badge.
 
 ### Phase 4: Direct Messaging & Chat
 - [ ] Design conversation and message storage model.

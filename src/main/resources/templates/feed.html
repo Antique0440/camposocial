@@ -7,22 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<header class="navbar">
-    <div class="navbar-inner navbar-wide">
-        <div class="nav-brand">
-            <span class="logo-dot"></span>
-            <span class="brand-title">campoSocial</span>
-        </div>
-        <div class="nav-actions">
-            <span class="user-pill">
-                Logged in as <strong th:text="${username}">Student</strong>
-            </span>
-            <form th:action="@{/logout}" method="post" class="logout-form">
-                <button type="submit" class="btn btn-outline">Log Out</button>
-            </form>
-        </div>
-    </div>
-</header>
+<div th:replace="~{fragments/layout :: navbar(${username}, 'feed')}"></div>
 
 <main class="feed-columns">
 
@@ -77,44 +62,9 @@
             <p class="muted">Be the first to post something for the campus.</p>
         </div>
 
-        <article class="card post-card" th:each="view : ${feed.content}" th:id="'post-' + ${view.post().id}">
-            <div class="post-head">
-                <div class="avatar" th:text="${#strings.toUpperCase(#strings.substring(view.post().author.username, 0, 1))}">S</div>
-                <div class="post-meta">
-                    <strong th:text="${view.post().author.username}">student</strong>
-                    <span class="muted" th:text="${#temporals.format(view.post().createdAt, 'dd MMM yyyy, HH:mm')}">date</span>
-                </div>
-                <span class="tag" th:text="${view.post().category.label}">#Tag</span>
-            </div>
-
-            <p class="post-body" th:text="${view.post().content}">content</p>
-
-            <div class="post-actions">
-                <form th:action="@{/posts/{id}/agree(id=${view.post().id})}" method="post">
-                    <button type="submit" class="btn-agree" th:classappend="${view.agreedByMe()} ? 'active'">
-                        Agree &middot; <span th:text="${view.agreeCount()}">0</span>
-                    </button>
-                </form>
-                <span class="muted" th:text="${#lists.size(view.comments())} + ' comments'">0 comments</span>
-                <form th:if="${view.canDelete()}" th:action="@{/posts/{id}/delete(id=${view.post().id})}"
-                      method="post" class="push-right"
-                      onsubmit="return confirm('Delete this post?');">
-                    <button type="submit" class="btn-link-danger">Delete</button>
-                </form>
-            </div>
-
-            <ul class="comment-list" th:if="${!view.comments().isEmpty()}">
-                <li th:each="comment : ${view.comments()}">
-                    <strong th:text="${comment.author.username}">student</strong>
-                    <span th:text="${comment.body}">comment</span>
-                </li>
-            </ul>
-
-            <form class="comment-form" th:action="@{/posts/{id}/comments(id=${view.post().id})}" method="post">
-                <input type="text" name="body" th:maxlength="${maxCommentLength}" placeholder="Write a comment..." required>
-                <button type="submit" class="btn btn-outline">Reply</button>
-            </form>
-        </article>
+        <th:block th:each="view : ${feed.content}">
+            <div th:replace="~{fragments/post :: card(${view}, ${returnTo})}"></div>
+        </th:block>
 
         <nav class="pagination" th:if="${feed.totalPages > 1}">
             <a th:if="${feed.hasPrevious()}"
