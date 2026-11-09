@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | campoSocial</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar(${username}, 'messages')}"></div>
+
+<main class="page-narrow">
+    <div class="page-head">
+        <h1>Messages</h1>
+        <p class="muted">Private conversations with other students.</p>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <form class="card new-chat" th:action="@{/messages/new}" method="post">
+        <input type="text" name="username" placeholder="Message a student by username" required maxlength="100">
+        <button type="submit" class="btn btn-primary">Start chat</button>
+    </form>
+
+    <div class="card empty-state" th:if="${inbox.isEmpty()}">
+        <h3>No conversations yet</h3>
+        <p class="muted">Start one above, or tap "Message" next to a member on a club page.</p>
+    </div>
+
+    <a class="card inbox-row" th:each="view : ${inbox}"
+       th:href="@{/messages/{id}(id=${view.conversation().id})}"
+       th:classappend="${view.unreadCount() > 0} ? 'unread'">
+        <div class="avatar" th:text="${#strings.toUpperCase(#strings.substring(view.other().username, 0, 1))}">S</div>
+        <div class="inbox-text">
+            <strong th:text="${view.other().username}">student</strong>
+            <span class="muted inbox-preview" th:if="${view.lastMessage() != null}"
+                  th:text="${#strings.abbreviate(view.lastMessage().body, 80)}">preview</span>
+            <span class="muted inbox-preview" th:if="${view.lastMessage() == null}">No messages yet</span>
+        </div>
+        <div class="inbox-meta">
+            <span class="muted" th:if="${view.lastMessage() != null}"
+                  th:text="${#temporals.format(view.lastMessage().createdAt, 'dd MMM, HH:mm')}">time</span>
+            <span class="badge" th:if="${view.unreadCount() > 0}" th:text="${view.unreadCount()}">1</span>
+        </div>
+    </a>
+</main>
+</body>
+</html>
+

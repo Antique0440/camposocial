@@ -5,6 +5,7 @@ import org.benjamincharles.camposocial.entity.PostCategory;
 import org.benjamincharles.camposocial.entity.User;
 import org.benjamincharles.camposocial.repository.ClubRepository;
 import org.benjamincharles.camposocial.repository.CommentRepository;
+import org.benjamincharles.camposocial.repository.ConversationRepository;
 import org.benjamincharles.camposocial.repository.PostRepository;
 import org.benjamincharles.camposocial.repository.ReactionRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
@@ -42,6 +43,8 @@ class FeedIntegrationTests {
     private ReactionRepository reactionRepository;
     @Autowired
     private ClubRepository clubRepository;
+    @Autowired
+    private ConversationRepository conversationRepository;
 
     private User kofi;
     private User ama;
@@ -50,6 +53,7 @@ class FeedIntegrationTests {
     void setUp() {
         postRepository.deleteAll();
         clubRepository.deleteAll();
+        conversationRepository.deleteAll();
         userRepository.deleteAll();
         kofi = userRepository.save(new User("kofi", "kofi@ashesi.edu.gh", "x"));
         ama = userRepository.save(new User("ama", "ama@ashesi.edu.gh", "x"));

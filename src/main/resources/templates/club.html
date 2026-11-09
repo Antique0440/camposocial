@@ -74,6 +74,10 @@
                         <span class="avatar avatar-sm" th:text="${#strings.toUpperCase(#strings.substring(m.user.username, 0, 1))}">S</span>
                         <span class="member-name" th:text="${m.user.username}">student</span>
                         <span class="tag" th:if="${m.role.name() == 'LEADER'}">Leader</span>
+                        <form th:if="${m.user.username != username}" th:action="@{/messages/new}" method="post">
+                            <input type="hidden" name="username" th:value="${m.user.username}">
+                            <button type="submit" class="btn-link">Message</button>
+                        </form>
                         <span class="member-actions"
                               th:if="${clubView.canManage() and m.user.username != username}">
                             <form th:if="${m.role.name() == 'MEMBER'}"

@@ -8,6 +8,7 @@ import org.benjamincharles.camposocial.entity.PostCategory;
 import org.benjamincharles.camposocial.entity.User;
 import org.benjamincharles.camposocial.repository.ClubMembershipRepository;
 import org.benjamincharles.camposocial.repository.ClubRepository;
+import org.benjamincharles.camposocial.repository.ConversationRepository;
 import org.benjamincharles.camposocial.repository.PostRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,8 @@ class ClubIntegrationTests {
     @Autowired
     private ClubMembershipRepository membershipRepository;
     @Autowired
+    private ConversationRepository conversationRepository;
+    @Autowired
     private DataSeeder dataSeeder;
 
     private User kofi;
@@ -54,6 +57,7 @@ class ClubIntegrationTests {
     void setUp() {
         postRepository.deleteAll();
         clubRepository.deleteAll();
+        conversationRepository.deleteAll();
         userRepository.deleteAll();
         kofi = userRepository.save(new User("kofi", "kofi@ashesi.edu.gh", "x"));
         tech = clubRepository.save(new Club("Tech Society", "Code together", ClubCategory.TECH, kofi));

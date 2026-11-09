@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Chat with ' + ${thread.other().username} + ' | campoSocial'">Chat | campoSocial</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar(${username}, 'messages')}"></div>
+
+<main class="page-narrow">
+    <div class="chat-header card">
+        <a class="club-link" th:href="@{/messages}">&larr; Inbox</a>
+        <div class="avatar" th:text="${#strings.toUpperCase(#strings.substring(thread.other().username, 0, 1))}">S</div>
+        <h2 th:text="${thread.other().username}">student</h2>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <section class="card chat-thread">
+        <p class="muted empty-state" th:if="${thread.messages().isEmpty()}">
+            No messages yet. Say hello!
+        </p>
+        <div class="bubble-row" th:each="m : ${thread.messages()}"
+             th:classappend="${m.sender.username == username} ? 'mine' : 'theirs'">
+            <div class="bubble">
+                <p th:text="${m.body}">message</p>
+                <span class="bubble-time" th:text="${#temporals.format(m.createdAt, 'dd MMM, HH:mm')}">time</span>
+            </div>
+        </div>
+    </section>
+
+    <form class="card composer" th:action="@{/messages/{id}(id=${thread.conversation().id})}" method="post">
+        <textarea name="body" rows="2" th:maxlength="${maxMessageLength}" required
+                  th:placeholder="'Message ' + ${thread.other().username} + '...'"></textarea>
+        <div class="composer-bar">
+            <span class="muted">Refresh the page to see new replies.</span>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
+

@@ -175,9 +175,11 @@ erDiagram
 
 > Club posts also appear on the campus feed with a club badge.
 
-### Phase 4: Direct Messaging & Chat
-- [ ] Design conversation and message storage model.
-- [ ] Implement basic messaging controller and UI views.
+### Phase 4: Direct Messaging & Chat (Completed)
+- [x] Design conversation and message storage model (`Conversation`, `Message` with participant normalization and unread tracking).
+- [x] Implement messaging service, controller, and UI views (`/messages` inbox, `/messages/{id}` thread view, start-chat form, reply form).
+- [x] Add global navigation unread badge via `@ControllerAdvice` (`NavigationModelAdvice`).
+- [x] Integrate direct "Message" action from student club member lists.
 - [ ] Optional enhancement: Add WebSocket (`spring-boot-starter-websocket`) for real-time live messaging.
 
 ### Phase 5: Production Hardening & Deployment

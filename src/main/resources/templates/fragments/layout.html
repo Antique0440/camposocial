@@ -10,6 +10,11 @@
         <nav class="nav-links">
             <a th:href="@{/feed}" th:classappend="${active == 'feed'} ? 'active'">Feed</a>
             <a th:href="@{/clubs}" th:classappend="${active == 'clubs'} ? 'active'">Clubs</a>
+            <a th:href="@{/messages}" th:classappend="${active == 'messages'} ? 'active'">
+                Messages
+                <span class="badge" th:if="${unreadMessages != null and unreadMessages > 0}"
+                      th:text="${unreadMessages}">1</span>
+            </a>
         </nav>
         <div class="nav-actions">
             <span class="user-pill">
