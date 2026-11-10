@@ -2,6 +2,7 @@ package org.benjamincharles.camposocial.controller;
 
 import org.benjamincharles.camposocial.entity.User;
 import org.benjamincharles.camposocial.repository.UserRepository;
+import org.benjamincharles.camposocial.security.InputSanitizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -53,8 +54,8 @@ public class AuthController {
             @RequestParam("password") String password,
             Model model
     ) {
-        String trimmedUsername = username != null ? username.trim() : "";
-        String trimmedEmail = email != null ? email.trim() : "";
+        String trimmedUsername = InputSanitizer.sanitize(username);
+        String trimmedEmail = InputSanitizer.sanitize(email);
 
         if (trimmedUsername.isEmpty() || trimmedEmail.isEmpty() || password == null || password.isBlank()) {
             model.addAttribute("error", "All fields are required.");

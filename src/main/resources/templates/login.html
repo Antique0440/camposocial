@@ -29,6 +29,10 @@
             Account created! Log in with your credentials.
         </div>
 
+        <div th:if="${param.rateLimited}" class="alert alert-error">
+            Too many attempts. Please wait a minute before trying again.
+        </div>
+
         <form th:action="@{/login}" method="post" class="auth-form">
             <div class="form-group">
                 <label for="username">Username</label>

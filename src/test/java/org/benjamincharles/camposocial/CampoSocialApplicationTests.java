@@ -4,6 +4,7 @@ import org.benjamincharles.camposocial.repository.ClubRepository;
 import org.benjamincharles.camposocial.repository.ConversationRepository;
 import org.benjamincharles.camposocial.repository.PostRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
+import org.benjamincharles.camposocial.security.RateLimitingFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,12 @@ class CampoSocialApplicationTests {
     @Autowired
     private ConversationRepository conversationRepository;
 
+    @Autowired
+    private RateLimitingFilter rateLimitingFilter;
+
     @BeforeEach
     void setUp() {
+        rateLimitingFilter.reset();
         postRepository.deleteAll();
         clubRepository.deleteAll();
         conversationRepository.deleteAll();

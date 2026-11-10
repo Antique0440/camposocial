@@ -12,6 +12,7 @@ import org.benjamincharles.camposocial.repository.CommentRepository;
 import org.benjamincharles.camposocial.repository.PostRepository;
 import org.benjamincharles.camposocial.repository.ReactionRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
+import org.benjamincharles.camposocial.security.InputSanitizer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -119,7 +120,7 @@ public class PostService {
                 throw new AccessDeniedException("Join the club to post in it.");
             }
         }
-        String text = content == null ? "" : content.trim();
+        String text = InputSanitizer.sanitize(content);
         if (text.isEmpty()) {
             throw new IllegalArgumentException("Post cannot be empty.");
         }
@@ -135,7 +136,7 @@ public class PostService {
     }
 
     public Comment addComment(String username, Long postId, String body) {
-        String text = body == null ? "" : body.trim();
+        String text = InputSanitizer.sanitize(body);
         if (text.isEmpty()) {
             throw new IllegalArgumentException("Comment cannot be empty.");
         }

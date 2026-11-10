@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    container_name: camposocial-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/campodb
+      - SPRING_DATASOURCE_USERNAME=campouser
+      - SPRING_DATASOURCE_PASSWORD=campopass
+      - CAMPO_ALLOWED_EMAIL_DOMAINS=ashesi.edu.gh
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: camposocial-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=campodb
+      - POSTGRES_USER=campouser
+      - POSTGRES_PASSWORD=campopass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campouser -d campodb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+

@@ -8,6 +8,7 @@ import org.benjamincharles.camposocial.entity.User;
 import org.benjamincharles.camposocial.repository.ClubMembershipRepository;
 import org.benjamincharles.camposocial.repository.ClubRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
+import org.benjamincharles.camposocial.security.InputSanitizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -57,8 +58,8 @@ public class ClubService {
 
     /** Creates a club and makes its creator the first leader. */
     public Club createClub(String username, String name, String description, ClubCategory category) {
-        String clubName = name == null ? "" : name.trim();
-        String clubDescription = description == null ? "" : description.trim();
+        String clubName = InputSanitizer.sanitize(name);
+        String clubDescription = InputSanitizer.sanitize(description);
         if (clubName.isEmpty()) {
             throw new IllegalArgumentException("Club name is required.");
         }

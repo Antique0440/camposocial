@@ -182,9 +182,10 @@ erDiagram
 - [x] Integrate direct "Message" action from student club member lists.
 - [ ] Optional enhancement: Add WebSocket (`spring-boot-starter-websocket`) for real-time live messaging.
 
-### Phase 5: Production Hardening & Deployment
-- [ ] Replace H2 with MySQL/PostgreSQL configuration.
-- [ ] Implement Flyway database schema migration scripts.
-- [ ] Audit input sanitization and enforce rate limiting on auth endpoints.
-- [ ] Package application as an executable JAR container.
+### Phase 5: Production Hardening & Deployment (Completed)
+- [x] Configure dual profile strategy: H2 in-memory for zero-friction development and testing (`application.properties`), and PostgreSQL dialect with environment variable credential injection for production (`application-prod.properties`).
+- [x] Implement Flyway database schema migration script (`V1__initial_schema.sql`) managing table schemas, foreign key constraints, and query performance indexes with `ddl-auto=validate`.
+- [x] Implement input sanitization (`InputSanitizer`) to neutralize raw script/HTML tags across posts, comments, clubs, and messages.
+- [x] Implement sliding-window rate limiting on authentication and registration endpoints (`RateLimitingFilter`) returning HTTP 429 Too Many Requests.
+- [x] Package application as a hardened container using multi-stage `Dockerfile` (non-root unprivileged runtime account) and complete local production stack in `docker-compose.yml`.
 

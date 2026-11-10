@@ -6,6 +6,7 @@ import org.benjamincharles.camposocial.entity.User;
 import org.benjamincharles.camposocial.repository.ConversationRepository;
 import org.benjamincharles.camposocial.repository.MessageRepository;
 import org.benjamincharles.camposocial.repository.UserRepository;
+import org.benjamincharles.camposocial.security.InputSanitizer;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -84,7 +85,7 @@ public class MessageService {
 
     public Message send(String username, Long conversationId, String body) {
         Conversation conversation = findConversationFor(conversationId, username);
-        String text = body == null ? "" : body.trim();
+        String text = InputSanitizer.sanitize(body);
         if (text.isEmpty()) {
             throw new IllegalArgumentException("Message cannot be empty.");
         }
